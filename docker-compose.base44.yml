@@ -1,0 +1,63 @@
+# Base44 sandbox environment for this Geometry Dash mod.
+#
+# This repository has no web application: the project is a Geode mod that is
+# compiled into a .geode package, which normally happens on CI (see
+# .github/workflows/c-cpp.yml) and in-game. So the sandbox
+#
+#   * `mod-build`  compiles the mod (and rebuilds on source changes), and
+#   * `preview`    serves the build report and the compiled package on port 3000,
+#
+# which is what the preview pane shows.
+#
+#   docker compose -f docker-compose.base44.yml up -d --build
+name: ai-in-editor
+
+services:
+  mod-build:
+    build:
+      context: .
+      dockerfile: .base44/Dockerfile
+    labels:
+      base44.project: "AI in Editor (mod build)"
+      base44.kind: "worker"
+    command: ["/opt/base44/build-mod.sh"]
+    environment:
+      WORK: /work
+      OUT: /out
+    volumes:
+      - .:/work
+      - mod-out:/out
+      - geode-cache:/root/.cache
+    healthcheck:
+      # A build report and a build log mean the toolchain came up and a build ran.
+      test: ["CMD-SHELL", "test -f /out/index.html && test -f /out/build.log"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 180s
+    restart: on-failure
+
+  preview:
+    image: nginx:alpine
+    labels:
+      base44.project: "AI in Editor"
+      base44.kind: "web"
+      base44.port: "3000"
+    ports:
+      - "3000:80"
+    volumes:
+      - mod-out:/usr/share/nginx/html:ro
+    depends_on:
+      mod-build:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: on-failure
+
+volumes:
+  mod-out:
+  geode-cache:

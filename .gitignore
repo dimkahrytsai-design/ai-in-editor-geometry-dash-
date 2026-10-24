@@ -1,0 +1,6 @@
+# Geode build output
+build*/
+*.geode
+
+# Local tooling
+.geode-profile/

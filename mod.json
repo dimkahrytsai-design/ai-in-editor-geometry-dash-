@@ -1,1 +1,14 @@
-
+{
+	"geode": "5.11.2",
+	"gd": {
+		"win": "2.2081",
+		"android": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081"
+	},
+	"id": "dimkahrytsai.ai-in-editor",
+	"name": "AI in Editor",
+	"version": "v1.0.0",
+	"developer": "dimkahrytsai-design",
+	"description": "AI helpers inside the Geometry Dash editor."
+}

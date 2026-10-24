@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  # Lets the build be run against a branch before it lands on main.
+  workflow_dispatch:
 
 jobs:
   build:
@@ -16,6 +18,3 @@ jobs:
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
-        
-
-          
